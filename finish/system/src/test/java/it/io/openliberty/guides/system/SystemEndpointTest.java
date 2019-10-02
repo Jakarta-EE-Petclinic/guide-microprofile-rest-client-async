@@ -33,7 +33,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-//import com.github.dockerjava.api.command.CreateContainerCmd;
+import com.github.dockerjava.api.command.CreateContainerCmd;
 
 import org.apache.cxf.jaxrs.provider.jsrjsonp.JsrJsonpProvider;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -45,11 +45,12 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
-//import org.testcontainers.containers.FixedHostPortGenericContainer;
+import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.containers.Network;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Rule;
 
 public class SystemEndpointTest {
 
@@ -155,7 +156,6 @@ public class SystemEndpointTest {
 
             elapsedTime = System.currentTimeMillis() - startTime;
             consumer.commitAsync();
-            System.out.println("waiting..."+elapsedTime);
         }
 
         assertTrue("No records processed", recordsProcessed > 0);

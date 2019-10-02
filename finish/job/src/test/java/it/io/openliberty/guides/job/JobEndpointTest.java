@@ -28,12 +28,41 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.apache.cxf.jaxrs.provider.jsrjsonp.JsrJsonpProvider;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
+
 public class JobEndpointTest {
 
     private static final String port = System.getProperty("test.http.port");
     private static final String BASE_URL = "http://localhost:" + port + "/jobs";
+    private final String KAFKA_SERVER = "localhost" + port;
+    private final int RETRIES = 5;
+    private final int BACKOFF_MULTIPLIER = 2;
 
     private Client client;
+    private Response response;
+    private KafkaProducer<String, String> producer;
+
+    @Rule
+    public Network network = Network.newNetwork();
+
+    @Rule
+    public FixedHostPortGenericContainer zookeeper = new FixedHostPortGenericContainer<>("bitnami/zookeeper:3")
+        .withFixedExposedPort(2181, 2181)
+        .withNetwork(network)
+        .withNetworkAliases("zookeeper")
+        .withEnv("ALLOW_ANONYMOUS_LOGIN", "yes");
+
+    @Rule
+    public FixedHostPortGenericContainer kafka = new FixedHostPortGenericContainer<>("bitnami/kafka:2")
+        .withFixedExposedPort(9092, 9092)
+        .withNetwork(network)
+        .withNetworkAliases("kafka")
+        .withEnv("KAFKA_CFG_ZOOKEEPER_CONNECT", "zookeeper:2181")
+        .withEnv("ALLOW_PLAINTEXT_LISTENER", "yes")
+        .withEnv("KAFKA_CFG_ADVERTISED_LISTENERS", "PLAINTEXT://localhost:9092");
 
     @Before
     public void setup() throws InterruptedException {

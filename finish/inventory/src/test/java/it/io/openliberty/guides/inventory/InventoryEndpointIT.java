@@ -28,6 +28,10 @@ import org.apache.cxf.jaxrs.provider.jsrjsonp.JsrJsonpProvider;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockserver.client.MockServerClient;
+import org.mockserver.junit.MockServerRule;
+import org.mockserver.model.HttpRequest;
+import org.mockserver.model.HttpResponse;
 
 public class InventoryEndpointIT {
 
@@ -35,6 +39,12 @@ public class InventoryEndpointIT {
     private static final String BASE_URL = "http://localhost:" + port + "/inventory/systems";
 
     private Client client;
+    private Response response;
+
+    @Rule
+    public MockServerRule mockServerRule = new MockServerRule(this, 9082);
+    
+    private MockServerClient mockServerClient = mockServerRule.getClient();
 
     @Before
     public void setup() throws InterruptedException {
